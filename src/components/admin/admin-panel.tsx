@@ -47,7 +47,7 @@ export default function AdminPanel() {
       document.body.removeChild(link);
       toast({ title: 'Success', description: 'CSV download started.' });
     } catch (error) {
-      toast({ variant: 'destructive', title: 'Error', description: 'Failed to download CSV.' });
+      toast({ variant: 'destructive', title: 'Error', 'description': 'Failed to download CSV.' });
     }
   };
 
@@ -72,7 +72,7 @@ export default function AdminPanel() {
             <TableRow>
               <TableHead className="w-[150px]">Timestamp</TableHead>
               <TableHead>Name</TableHead>
-              <TableHead>Unique ID</TableHead>
+              <TableHead>Email</TableHead>
               <TableHead className="text-right">Signature</TableHead>
             </TableRow>
           </TableHeader>

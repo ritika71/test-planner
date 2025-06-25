@@ -26,7 +26,7 @@ export function SignForm() {
     resolver: zodResolver(signFormSchema),
     defaultValues: {
       name: '',
-      uniqueId: '',
+      email: '',
       signature: '',
     },
   });
@@ -78,12 +78,12 @@ export function SignForm() {
         />
         <FormField
           control={form.control}
-          name="uniqueId"
+          name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Unique ID</FormLabel>
+              <FormLabel>Email Address</FormLabel>
               <FormControl>
-                <Input placeholder="Enter your unique identifier" {...field} />
+                <Input type="email" placeholder="your@email.com" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

@@ -4,36 +4,23 @@ import { z } from 'zod';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { signFormSchema, type SignFormValues } from '@/lib/schemas';
-import { generateAvatar } from '@/ai/flows/generate-avatar';
 import { getRows, appendRow } from '@/lib/sheets';
 import type { Submission } from '@/lib/types';
 
-const VALID_IDS = (process.env.VALID_IDS || 'VALID_ID_1,VALID_ID_2,VALID_ID_3').split(',');
+const VALID_IDS = (process.env.VALID_IDS || 'test1@example.com,test2@example.com,test3@example.com').split(',');
 
 export async function submitSignature(values: SignFormValues) {
   try {
     const validatedFields = signFormSchema.parse(values);
 
-    if (!VALID_IDS.includes(validatedFields.uniqueId)) {
-      return { success: false, error: 'ID not recognized. Please provide a valid ID.' };
-    }
-
-    let signatureData = validatedFields.signature;
-    if (!signatureData) {
-      try {
-        const avatarResult = await generateAvatar({ userName: validatedFields.name });
-        signatureData = avatarResult.avatarDataUri;
-      } catch (aiError) {
-        console.error('AI Avatar Generation Failed:', aiError);
-        // Fallback to a placeholder if AI fails
-        signatureData = `https://placehold.co/300x150.png?text=No+Signature`;
-      }
+    if (!VALID_IDS.includes(validatedFields.email)) {
+      return { success: false, error: 'Email not recognized. Please provide a valid email.' };
     }
 
     const submissionData = {
       name: validatedFields.name,
-      uniqueId: validatedFields.uniqueId,
-      signature: signatureData,
+      uniqueId: validatedFields.email,
+      signature: validatedFields.signature,
       timestamp: new Date().toISOString(),
     };
     
@@ -82,7 +69,7 @@ export async function downloadCsv() {
         throw new Error('Unauthorized');
     }
     const data = await getRows();
-    const headers = ['ID', 'Name', 'Unique ID', 'Timestamp', 'Signature Link'];
+    const headers = ['ID', 'Name', 'Email', 'Timestamp', 'Signature Link'];
     const csvRows = [
         headers.join(','),
         ...data.map(row => [

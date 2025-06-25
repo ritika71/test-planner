@@ -2,8 +2,8 @@ import { z } from 'zod';
 
 export const signFormSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
-  uniqueId: z.string().min(1, { message: 'Unique ID is required.' }),
-  signature: z.string().optional(),
+  email: z.string().email({ message: 'Please enter a valid email address.' }),
+  signature: z.string().min(1, { message: 'A signature is required. Please draw or upload your signature.' }),
 });
 
 export type SignFormValues = z.infer<typeof signFormSchema>;

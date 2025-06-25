@@ -7,14 +7,14 @@ const mockSheetData: Submission[] = [
     {
         id: '1',
         name: 'Jane Doe',
-        uniqueId: 'VALID_ID_1',
+        uniqueId: 'test1@example.com',
         signature: 'https://placehold.co/300x150.png',
         timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
     },
     {
         id: '2',
         name: 'Peter Jones',
-        uniqueId: 'VALID_ID_2',
+        uniqueId: 'test2@example.com',
         signature: 'https://placehold.co/300x150.png',
         timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
     }
