@@ -7,19 +7,29 @@ import { signFormSchema, type SignFormValues } from '@/lib/schemas';
 import { getRows, appendRow } from '@/lib/sheets';
 import type { Submission } from '@/lib/types';
 
-const VALID_IDS = (process.env.VALID_IDS || 'test1@example.com,test2@example.com,test3@example.com').split(',');
+const VALID_PAIRS_STRING = process.env.VALID_PAIRS || 'ritika@weetechsolution.com:111222333,test1@example.com:id1,test2@example.com:id2,test3@example.com:id3';
+
+const VALID_PAIRS = new Map(
+  VALID_PAIRS_STRING.split(',').map(pair => {
+    const [email, id] = pair.split(':');
+    return [email, id];
+  })
+);
 
 export async function submitSignature(values: SignFormValues) {
   try {
     const validatedFields = signFormSchema.parse(values);
 
-    if (!VALID_IDS.includes(validatedFields.email)) {
-      return { success: false, error: 'Email not recognized. Please provide a valid email.' };
+    const expectedUniqueId = VALID_PAIRS.get(validatedFields.email);
+
+    if (!expectedUniqueId || expectedUniqueId !== validatedFields.uniqueId) {
+      return { success: false, error: 'Email or Unique ID not recognized. Please check your details.' };
     }
 
     const submissionData = {
       name: validatedFields.name,
-      uniqueId: validatedFields.email,
+      email: validatedFields.email,
+      uniqueId: validatedFields.uniqueId,
       signature: validatedFields.signature,
       timestamp: new Date().toISOString(),
     };
@@ -69,12 +79,13 @@ export async function downloadCsv() {
         throw new Error('Unauthorized');
     }
     const data = await getRows();
-    const headers = ['ID', 'Name', 'Email', 'Timestamp', 'Signature Link'];
+    const headers = ['ID', 'Name', 'Email', 'Unique ID', 'Timestamp', 'Signature Link'];
     const csvRows = [
         headers.join(','),
         ...data.map(row => [
             row.id,
             `"${row.name}"`,
+            row.email,
             row.uniqueId,
             row.timestamp,
             row.signature.startsWith('data:') ? 'Embedded' : row.signature

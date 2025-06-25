@@ -27,6 +27,7 @@ export function SignForm() {
     defaultValues: {
       name: '',
       email: '',
+      uniqueId: '',
       signature: '',
     },
   });
@@ -84,6 +85,19 @@ export function SignForm() {
               <FormLabel>Email Address</FormLabel>
               <FormControl>
                 <Input type="email" placeholder="your@email.com" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="uniqueId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Unique ID</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter your unique ID" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

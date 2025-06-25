@@ -73,13 +73,14 @@ export default function AdminPanel() {
               <TableHead className="w-[150px]">Timestamp</TableHead>
               <TableHead>Name</TableHead>
               <TableHead>Email</TableHead>
+              <TableHead>Unique ID</TableHead>
               <TableHead className="text-right">Signature</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={4} className="h-24 text-center">
+                <TableCell colSpan={5} className="h-24 text-center">
                   <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary" />
                 </TableCell>
               </TableRow>
@@ -88,6 +89,7 @@ export default function AdminPanel() {
                 <TableRow key={sub.id}>
                   <TableCell>{new Date(sub.timestamp).toLocaleString()}</TableCell>
                   <TableCell className="font-medium">{sub.name}</TableCell>
+                  <TableCell>{sub.email}</TableCell>
                   <TableCell>{sub.uniqueId}</TableCell>
                   <TableCell className="text-right">
                     <Image
@@ -103,7 +105,7 @@ export default function AdminPanel() {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={4} className="h-24 text-center">No submissions yet.</TableCell>
+                <TableCell colSpan={5} className="h-24 text-center">No submissions yet.</TableCell>
               </TableRow>
             )}
           </TableBody>

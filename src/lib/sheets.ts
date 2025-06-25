@@ -7,14 +7,16 @@ const mockSheetData: Submission[] = [
     {
         id: '1',
         name: 'Jane Doe',
-        uniqueId: 'test1@example.com',
+        email: 'test1@example.com',
+        uniqueId: 'id1',
         signature: 'https://placehold.co/300x150.png',
         timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
     },
     {
         id: '2',
         name: 'Peter Jones',
-        uniqueId: 'test2@example.com',
+        email: 'test2@example.com',
+        uniqueId: 'id2',
         signature: 'https://placehold.co/300x150.png',
         timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
     }
@@ -36,10 +38,10 @@ export async function appendRow(data: Omit<Submission, 'id'>): Promise<void> {
   
   await sheets.spreadsheets.values.append({
     spreadsheetId: process.env.GOOGLE_SHEET_ID,
-    range: 'Sheet1!A:D',
+    range: 'Sheet1!A:E',
     valueInputOption: 'USER_ENTERED',
     resource: {
-      values: [[data.name, data.uniqueId, data.signature, data.timestamp]],
+      values: [[data.name, data.email, data.uniqueId, data.signature, data.timestamp]],
     },
   });
   */
