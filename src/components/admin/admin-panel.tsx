@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { adminLogout, getAdminData, downloadCsv } from '@/app/actions';
 import type { Submission } from '@/lib/types';
 import { Button } from '@/components/ui/button';
@@ -17,6 +17,10 @@ export default function AdminPanel({ initialSubmissions }: AdminPanelProps) {
   const [submissions, setSubmissions] = useState<Submission[]>(initialSubmissions);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    setSubmissions(initialSubmissions);
+  }, [initialSubmissions]);
 
   const loadSubmissions = async () => {
     setIsLoading(true);
