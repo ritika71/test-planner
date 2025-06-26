@@ -11,12 +11,18 @@ import type { Submission } from './types';
 // GOOGLE_SHEETS_CLIENT_EMAIL=your_service_account_email@your_project_id.iam.gserviceaccount.com
 // GOOGLE_SHEETS_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYour_private_key_here\n-----END PRIVATE KEY-----\n"
 //
-// Note: The private key must be wrapped in quotes and have newlines escaped as \n.
+// To bypass this for local development, you can set MOCK_SHEETS_API=true in your .env file.
 
 const SPREADSHEET_ID = process.env.GOOGLE_SHEET_ID;
-// Assumes data is in Sheet1, with headers in row 1 and data starting from row 2.
-// The range A:E corresponds to Timestamp, Name, Email, Unique ID, Signature.
-const RANGE = 'Sheet1!A:E';
+const RANGE = 'Sheet1!A:E'; // Assumes data is in Sheet1
+
+const useMock = 
+    process.env.MOCK_SHEETS_API === 'true' ||
+    !process.env.GOOGLE_SHEETS_CLIENT_EMAIL ||
+    !process.env.GOOGLE_SHEETS_PRIVATE_KEY ||
+    !SPREADSHEET_ID ||
+    SPREADSHEET_ID === 'your_sheet_id_here';
+
 
 // Configure the Google Sheets API client
 const getSheetsClient = () => {
@@ -24,11 +30,6 @@ const getSheetsClient = () => {
         client_email: process.env.GOOGLE_SHEETS_CLIENT_EMAIL,
         private_key: process.env.GOOGLE_SHEETS_PRIVATE_KEY?.replace(/\\n/g, '\n'),
     };
-    
-    if (!credentials.client_email || !credentials.private_key || !SPREADSHEET_ID || SPREADSHEET_ID === 'your_sheet_id_here') {
-        console.error('Google Sheets API credentials are not set in environment variables.');
-        // This allows the app to build even if credentials are not yet configured.
-    }
     
     const auth = new google.auth.GoogleAuth({
         credentials,
@@ -40,12 +41,13 @@ const getSheetsClient = () => {
 
 
 export async function appendRow(data: Omit<Submission, 'id'>): Promise<void> {
-    const sheets = getSheetsClient();
-    if (!process.env.GOOGLE_SHEETS_CLIENT_EMAIL || !process.env.GOOGLE_SHEETS_PRIVATE_KEY || !SPREADSHEET_ID || SPREADSHEET_ID === 'your_sheet_id_here') {
+    if (useMock) {
         console.log('MOCK MODE: Appending to sheet:', data);
-        return Promise.resolve(); // In mock mode if credentials are not set
+        // In mock mode, we do nothing.
+        return Promise.resolve();
     }
     
+    const sheets = getSheetsClient();
     try {
         // We assume the sheet columns are in this order:
         // Timestamp, Name, Email, Unique ID, Signature
@@ -68,22 +70,20 @@ export async function appendRow(data: Omit<Submission, 'id'>): Promise<void> {
 
     } catch (error) {
         console.error('Error appending row to Google Sheet:', error);
-        // Add more detailed logging for debugging
         console.error(`DEBUG: Attempted to write to Sheet ID: ${SPREADSHEET_ID}`);
         console.error(`DEBUG: Using Service Account Email starting with: ${process.env.GOOGLE_SHEETS_CLIENT_EMAIL?.substring(0, 15)}...`);
-        // Re-throw the original error to be handled by the calling action,
-        // which can provide more specific feedback to the user.
         throw error;
     }
 }
 
 export async function getRows(): Promise<Submission[]> {
-    const sheets = getSheetsClient();
-    if (!process.env.GOOGLE_SHEETS_CLIENT_EMAIL || !process.env.GOOGLE_SHEETS_PRIVATE_KEY || !SPREADSHEET_ID || SPREADSHEET_ID === 'your_sheet_id_here') {
+    if (useMock) {
         console.log('MOCK MODE: Fetching rows from sheet.');
-        return Promise.resolve([]); // In mock mode if credentials are not set
+        // In mock mode, we return an empty array.
+        return Promise.resolve([]);
     }
-    
+
+    const sheets = getSheetsClient();
     try {
         const response = await sheets.spreadsheets.values.get({
             spreadsheetId: SPREADSHEET_ID,
@@ -109,7 +109,6 @@ export async function getRows(): Promise<Submission[]> {
     } catch (error) {
         const gerror = error as any;
         console.error('Error fetching rows from Google Sheet:', gerror.message);
-        // Add more detailed logging for debugging
         console.error(`DEBUG: Attempted to read from Sheet ID: ${SPREADSHEET_ID}`);
         console.error(`DEBUG: Using Service Account Email starting with: ${process.env.GOOGLE_SHEETS_CLIENT_EMAIL?.substring(0, 15)}...`);
         if (gerror.code === 404 || gerror.code === 403) {

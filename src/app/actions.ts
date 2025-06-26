@@ -39,7 +39,7 @@ export async function submitSignature(values: SignFormValues) {
 
     // Add specific hints for common Google Sheets API errors
     if (gerror.code === 403) {
-        errorMessage = 'Permission Denied. Please ensure the service account has "Editor" permissions for the Google Sheet.';
+        errorMessage = 'Permission Denied. Please ensure the service account has "Editor" permissions for the Google Sheet. For development, you can set MOCK_SHEETS_API=true in the .env file to bypass this error.';
     } else if (gerror.code === 404) {
         errorMessage = 'Sheet Not Found. Please double-check your GOOGLE_SHEET_ID.';
     }
