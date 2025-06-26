@@ -35,7 +35,6 @@ export default function LoginForm() {
       const result = await adminLogin(values.password);
       if (result.success) {
         toast({ title: 'Login successful!' });
-        // Use router.refresh() to re-fetch Server Components and show admin panel
         router.refresh();
       } else {
         toast({
@@ -43,7 +42,6 @@ export default function LoginForm() {
           title: 'Login failed',
           description: result.error,
         });
-        setIsSubmitting(false); // Re-enable button on failure
       }
     } catch (e) {
       toast({
@@ -51,7 +49,10 @@ export default function LoginForm() {
         title: 'An unexpected error occurred',
         description: 'Please try again later.',
       });
-      setIsSubmitting(false); // Re-enable button on error
+    } finally {
+      // This ensures the loader is always turned off after the attempt,
+      // preventing the button from getting stuck.
+      setIsSubmitting(false);
     }
   };
 
