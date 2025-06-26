@@ -68,6 +68,9 @@ export async function appendRow(data: Omit<Submission, 'id'>): Promise<void> {
 
     } catch (error) {
         console.error('Error appending row to Google Sheet:', error);
+        // Add more detailed logging for debugging
+        console.error(`DEBUG: Attempted to write to Sheet ID: ${SPREADSHEET_ID}`);
+        console.error(`DEBUG: Using Service Account Email starting with: ${process.env.GOOGLE_SHEETS_CLIENT_EMAIL?.substring(0, 15)}...`);
         // Re-throw the original error to be handled by the calling action,
         // which can provide more specific feedback to the user.
         throw error;
@@ -106,6 +109,9 @@ export async function getRows(): Promise<Submission[]> {
     } catch (error) {
         const gerror = error as any;
         console.error('Error fetching rows from Google Sheet:', gerror.message);
+        // Add more detailed logging for debugging
+        console.error(`DEBUG: Attempted to read from Sheet ID: ${SPREADSHEET_ID}`);
+        console.error(`DEBUG: Using Service Account Email starting with: ${process.env.GOOGLE_SHEETS_CLIENT_EMAIL?.substring(0, 15)}...`);
         if (gerror.code === 404 || gerror.code === 403) {
             console.error("Sheet not found or permission denied. Please check your GOOGLE_SHEET_ID and sharing settings.");
         }
