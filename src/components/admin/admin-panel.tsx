@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useTransition } from 'react';
+import { useState, useEffect } from 'react';
 import { adminLogout, getAdminData, downloadCsv } from '@/app/actions';
 import type { Submission } from '@/lib/types';
 import { Button } from '@/components/ui/button';
@@ -12,21 +12,18 @@ import Image from 'next/image';
 export default function AdminPanel() {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
 
-  const loadSubmissions = () => {
+  const loadSubmissions = async () => {
     setIsLoading(true);
-    startTransition(async () => {
-      try {
-        const data = await getAdminData();
-        setSubmissions(data);
-      } catch (error) {
-        toast({ variant: 'destructive', title: 'Error', description: 'Failed to fetch submissions.' });
-      } finally {
-        setIsLoading(false);
-      }
-    });
+    try {
+      const data = await getAdminData();
+      setSubmissions(data);
+    } catch (error) {
+      toast({ variant: 'destructive', title: 'Error', description: 'Failed to fetch submissions.' });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
