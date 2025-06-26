@@ -31,16 +31,25 @@ export default function LoginForm() {
 
   const onSubmit = async (values: AdminLoginValues) => {
     setIsSubmitting(true);
-    const result = await adminLogin(values.password);
-    if (result.success) {
-      toast({ title: 'Login successful!' });
-      router.refresh();
-    } else {
+    try {
+      const result = await adminLogin(values.password);
+      if (result.success) {
+        toast({ title: 'Login successful!' });
+        router.refresh();
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Login failed',
+          description: result.error,
+        });
+      }
+    } catch (e) {
       toast({
         variant: 'destructive',
-        title: 'Login failed',
-        description: result.error,
+        title: 'An unexpected error occurred',
+        description: 'Please try again later.',
       });
+    } finally {
       setIsSubmitting(false);
     }
   };
