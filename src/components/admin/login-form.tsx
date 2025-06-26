@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter } from 'next/navigation';
 import {
   Form,
   FormControl,
@@ -21,7 +20,6 @@ import { adminLogin } from '@/app/actions';
 
 export default function LoginForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const router = useRouter();
   const { toast } = useToast();
 
   const form = useForm<AdminLoginValues>({
@@ -35,13 +33,16 @@ export default function LoginForm() {
       const result = await adminLogin(values.password);
       if (result.success) {
         toast({ title: 'Login successful!' });
-        router.refresh();
+        // Instead of a soft refresh, we do a full page reload to ensure
+        // the server re-evaluates the login status and sends the data.
+        window.location.reload();
       } else {
         toast({
           variant: 'destructive',
           title: 'Login failed',
           description: result.error,
         });
+        setIsSubmitting(false); // Re-enable button on failure
       }
     } catch (e) {
       toast({
@@ -49,8 +50,7 @@ export default function LoginForm() {
         title: 'An unexpected error occurred',
         description: 'Please try again later.',
       });
-    } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false); // Re-enable button on error
     }
   };
 
