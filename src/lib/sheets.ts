@@ -1,62 +1,112 @@
-// This is a mock implementation of a Google Sheets API helper.
-// In a real application, you would use the 'googleapis' library to interact with Google Sheets.
+// src/lib/sheets.ts
+import { google } from 'googleapis';
 import type { Submission } from './types';
 
-// Mock database
-const mockSheetData: Submission[] = [
-    {
-        id: '1',
-        name: 'Jane Doe',
-        email: 'test1@example.com',
-        uniqueId: 'id1',
-        signature: 'https://placehold.co/300x150.png',
-        timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-    },
-    {
-        id: '2',
-        name: 'Peter Jones',
-        email: 'test2@example.com',
-        uniqueId: 'id2',
-        signature: 'https://placehold.co/300x150.png',
-        timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+// This is the main configuration for the Google Sheets API.
+// IMPORTANT: You must set up a Google Cloud project with the Sheets API enabled,
+// create a service account, and share your Google Sheet with the service account's email.
+// Then, create a .env file in the root of your project and add the following:
+//
+// GOOGLE_SHEET_ID=your_sheet_id_here
+// GOOGLE_SHEETS_CLIENT_EMAIL=your_service_account_email@your_project_id.iam.gserviceaccount.com
+// GOOGLE_SHEETS_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYour_private_key_here\n-----END PRIVATE KEY-----\n"
+//
+// Note: The private key must be wrapped in quotes and have newlines escaped as \n.
+
+const SPREADSHEET_ID = process.env.GOOGLE_SHEET_ID;
+// Assumes data is in Sheet1, with headers in row 1 and data starting from row 2.
+// The range A:E corresponds to Timestamp, Name, Email, Unique ID, Signature.
+const RANGE = 'Sheet1!A:E';
+
+// Configure the Google Sheets API client
+const getSheetsClient = () => {
+    const credentials = {
+        client_email: process.env.GOOGLE_SHEETS_CLIENT_EMAIL,
+        private_key: process.env.GOOGLE_SHEETS_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+    };
+    
+    if (!credentials.client_email || !credentials.private_key || !SPREADSHEET_ID || SPREADSHEET_ID === 'your_sheet_id_here') {
+        console.error('Google Sheets API credentials are not set in environment variables.');
+        // This allows the app to build even if credentials are not yet configured.
     }
-];
+    
+    const auth = new google.auth.GoogleAuth({
+        credentials,
+        scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+    });
+
+    return google.sheets({ version: 'v4', auth });
+}
+
 
 export async function appendRow(data: Omit<Submission, 'id'>): Promise<void> {
-  // In a real app, you would use the Google Sheets API to append a new row.
-  // Example:
-  /*
-  const { google } = require('googleapis');
-  const auth = new google.auth.GoogleAuth({
-    credentials: {
-      client_email: process.env.GOOGLE_SHEETS_CLIENT_EMAIL,
-      private_key: process.env.GOOGLE_SHEETS_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-    },
-    scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-  });
-  const sheets = google.sheets({ version: 'v4', auth });
-  
-  await sheets.spreadsheets.values.append({
-    spreadsheetId: process.env.GOOGLE_SHEET_ID,
-    range: 'Sheet1!A:E',
-    valueInputOption: 'USER_ENTERED',
-    resource: {
-      values: [[data.name, data.email, data.uniqueId, data.signature, data.timestamp]],
-    },
-  });
-  */
-  
-  console.log('MOCK: Appending to sheet:', data);
-  const newEntry: Submission = {
-    ...data,
-    id: (mockSheetData.length + 1).toString(),
-  }
-  mockSheetData.push(newEntry);
-  return Promise.resolve();
+    const sheets = getSheetsClient();
+    if (!process.env.GOOGLE_SHEETS_CLIENT_EMAIL || !process.env.GOOGLE_SHEETS_PRIVATE_KEY || !SPREADSHEET_ID || SPREADSHEET_ID === 'your_sheet_id_here') {
+        console.log('MOCK MODE: Appending to sheet:', data);
+        return Promise.resolve(); // In mock mode if credentials are not set
+    }
+    
+    try {
+        // We assume the sheet columns are in this order:
+        // Timestamp, Name, Email, Unique ID, Signature
+        const values = [[
+            data.timestamp,
+            data.name,
+            data.email,
+            data.uniqueId,
+            data.signature,
+        ]];
+        
+        await sheets.spreadsheets.values.append({
+            spreadsheetId: SPREADSHEET_ID,
+            range: RANGE,
+            valueInputOption: 'USER_ENTERED',
+            resource: {
+                values,
+            },
+        });
+
+    } catch (error) {
+        console.error('Error appending row to Google Sheet:', error);
+        throw new Error('Failed to save submission to the sheet.');
+    }
 }
 
 export async function getRows(): Promise<Submission[]> {
-  // In a real app, you would fetch data from the Google Sheet.
-  console.log('MOCK: Fetching rows from sheet.');
-  return Promise.resolve(mockSheetData.sort((a,b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()));
+    const sheets = getSheetsClient();
+    if (!process.env.GOOGLE_SHEETS_CLIENT_EMAIL || !process.env.GOOGLE_SHEETS_PRIVATE_KEY || !SPREADSHEET_ID || SPREADSHEET_ID === 'your_sheet_id_here') {
+        console.log('MOCK MODE: Fetching rows from sheet.');
+        return Promise.resolve([]); // In mock mode if credentials are not set
+    }
+    
+    try {
+        const response = await sheets.spreadsheets.values.get({
+            spreadsheetId: SPREADSHEET_ID,
+            range: RANGE,
+        });
+
+        const rows = response.data.values;
+        if (!rows || rows.length <= 1) { // <=1 to account for header
+            return [];
+        }
+
+        // We skip the first row (header) with .slice(1)
+        // Then map the sheet rows to Submission objects.
+        return rows.slice(1).map((row, index) => ({
+            id: (index + 2).toString(), // +2 because sheets are 1-indexed and we sliced the header
+            timestamp: row[0] || '',
+            name: row[1] || '',
+            email: row[2] || '',
+            uniqueId: row[3] || '',
+            signature: row[4] || '',
+        })).sort((a,b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
+    } catch (error) {
+        const gerror = error as any;
+        console.error('Error fetching rows from Google Sheet:', gerror.message);
+        if (gerror.code === 404 || gerror.code === 403) {
+            console.error("Sheet not found or permission denied. Please check your GOOGLE_SHEET_ID and sharing settings.");
+        }
+        return [];
+    }
 }

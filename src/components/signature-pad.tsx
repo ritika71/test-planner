@@ -20,7 +20,12 @@ export function SignaturePad({ onChange }: SignaturePadProps) {
 
   const handleDrawEnd = () => {
     if (padRef.current) {
-      onChange(padRef.current.toDataURL('image/png'));
+      // Ensure we don't send an "empty" data URL by checking if the pad is empty.
+      if (!padRef.current.isEmpty()) {
+        onChange(padRef.current.toDataURL('image/png'));
+      } else {
+        onChange('');
+      }
     }
   };
 
