@@ -1,6 +1,6 @@
 'use client';
 
-import { useTransition } from 'react';
+import { useTransition, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { adminLogout, downloadCsv } from '@/app/actions';
 import type { Submission } from '@/lib/types';
@@ -18,6 +18,11 @@ export default function AdminPanel({ initialSubmissions }: AdminPanelProps) {
   const router = useRouter();
   const [isRefreshing, startTransition] = useTransition();
   const { toast } = useToast();
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const handleRefresh = () => {
     startTransition(() => {
@@ -73,7 +78,7 @@ export default function AdminPanel({ initialSubmissions }: AdminPanelProps) {
             {initialSubmissions.length > 0 ? (
               initialSubmissions.map((sub) => (
                 <TableRow key={sub.id}>
-                  <TableCell>{new Date(sub.timestamp).toLocaleString()}</TableCell>
+                  <TableCell>{isClient ? new Date(sub.timestamp).toLocaleString() : ''}</TableCell>
                   <TableCell className="font-medium">{sub.name}</TableCell>
                   <TableCell>{sub.email}</TableCell>
                   <TableCell>{sub.uniqueId}</TableCell>
