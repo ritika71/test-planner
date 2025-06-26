@@ -68,7 +68,9 @@ export async function appendRow(data: Omit<Submission, 'id'>): Promise<void> {
 
     } catch (error) {
         console.error('Error appending row to Google Sheet:', error);
-        throw new Error('Failed to save submission to the sheet.');
+        // Re-throw the original error to be handled by the calling action,
+        // which can provide more specific feedback to the user.
+        throw error;
     }
 }
 
