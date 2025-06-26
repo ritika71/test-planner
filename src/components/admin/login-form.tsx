@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -21,6 +22,7 @@ import { adminLogin } from '@/app/actions';
 export default function LoginForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const router = useRouter();
 
   const form = useForm<AdminLoginValues>({
     resolver: zodResolver(adminLoginSchema),
@@ -33,9 +35,8 @@ export default function LoginForm() {
       const result = await adminLogin(values.password);
       if (result.success) {
         toast({ title: 'Login successful!' });
-        // Instead of a soft refresh, we do a full page reload to ensure
-        // the server re-evaluates the login status and sends the data.
-        window.location.reload();
+        // Use router.refresh() to re-fetch Server Components and show admin panel
+        router.refresh();
       } else {
         toast({
           variant: 'destructive',
