@@ -7,24 +7,9 @@ import { signFormSchema, type SignFormValues } from '@/lib/schemas';
 import { getRows, appendRow } from '@/lib/sheets';
 import type { Submission } from '@/lib/types';
 
-const VALID_PAIRS_STRING = process.env.VALID_PAIRS || 'ritika@weetechsolution.com:111222333,test1@example.com:id1,test2@example.com:id2,test3@example.com:id3';
-
-const VALID_PAIRS = new Map(
-  VALID_PAIRS_STRING.split(',').map(pair => {
-    const [email, id] = pair.split(':');
-    return [email, id];
-  })
-);
-
 export async function submitSignature(values: SignFormValues) {
   try {
     const validatedFields = signFormSchema.parse(values);
-
-    const expectedUniqueId = VALID_PAIRS.get(validatedFields.email);
-
-    if (!expectedUniqueId || expectedUniqueId !== validatedFields.uniqueId) {
-      return { success: false, error: 'Email or Unique ID not recognized. Please check your details.' };
-    }
 
     const submissionData = {
       name: validatedFields.name,
@@ -42,7 +27,24 @@ export async function submitSignature(values: SignFormValues) {
       return { success: false, error: 'Invalid data provided.' };
     }
     console.error('Submission Error:', error);
-    return { success: false, error: 'An unexpected server error occurred.' };
+
+    const gerror = error as any;
+    let errorMessage = 'An unexpected server error occurred. Please check the server logs.';
+    
+    if (gerror.errors && gerror.errors.length > 0 && gerror.errors[0].message) {
+        errorMessage = gerror.errors[0].message;
+    } else if (gerror.message) {
+        errorMessage = gerror.message;
+    }
+
+    // Add specific hints for common Google Sheets API errors
+    if (gerror.code === 403) {
+        errorMessage = 'Permission Denied. Please ensure the service account has "Editor" permissions for the Google Sheet.';
+    } else if (gerror.code === 404) {
+        errorMessage = 'Sheet Not Found. Please double-check your GOOGLE_SHEET_ID.';
+    }
+    
+    return { success: false, error: errorMessage };
   }
 }
 
