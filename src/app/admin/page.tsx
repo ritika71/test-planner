@@ -6,6 +6,8 @@ import { Lock } from 'lucide-react';
 import { getAdminData } from '@/app/actions';
 import type { Submission } from '@/lib/types';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminPage() {
   const isLoggedIn = cookies().get('signease-admin-auth')?.value === 'true';
 
