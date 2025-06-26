@@ -18,16 +18,23 @@ const SPREADSHEET_ID = process.env.GOOGLE_SHEET_ID;
 const SHEET_NAME = process.env.GOOGLE_SHEET_NAME || 'Sheet1';
 const RANGE = `${SHEET_NAME}!A:E`; // Assumes data is in columns A through E
 
-const useMock = 
-    process.env.MOCK_SHEETS_API === 'true' ||
-    !process.env.GOOGLE_SHEETS_CLIENT_EMAIL ||
-    !process.env.GOOGLE_SHEETS_PRIVATE_KEY ||
-    !SPREADSHEET_ID ||
-    SPREADSHEET_ID === 'your_sheet_id_here';
+const useMock = process.env.MOCK_SHEETS_API === 'true';
 
+// This function checks if all required environment variables are set.
+const checkCredentials = () => {
+    if (
+        !process.env.GOOGLE_SHEETS_CLIENT_EMAIL ||
+        !process.env.GOOGLE_SHEETS_PRIVATE_KEY ||
+        !SPREADSHEET_ID ||
+        SPREADSHEET_ID === 'your_sheet_id_here'
+    ) {
+        throw new Error('Google Sheets API credentials are not fully configured in the .env file. Please provide GOOGLE_SHEET_ID, GOOGLE_SHEETS_CLIENT_EMAIL, and GOOGLE_SHEETS_PRIVATE_KEY. To work locally without a real sheet, set MOCK_SHEETS_API=true in the .env file.');
+    }
+}
 
 // Configure the Google Sheets API client
 const getSheetsClient = () => {
+    checkCredentials();
     const credentials = {
         client_email: process.env.GOOGLE_SHEETS_CLIENT_EMAIL,
         private_key: process.env.GOOGLE_SHEETS_PRIVATE_KEY?.replace(/\\n/g, '\n'),
