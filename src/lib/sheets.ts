@@ -45,6 +45,7 @@ const getSheetsClient = () => {
 export async function appendRow(data: Omit<Submission, 'id'>): Promise<void> {
     if (useMock) {
         console.log('MOCK MODE: Appending to sheet:', data);
+        console.log('MOCK MODE: To see data in your sheet, set MOCK_SHEETS_API=false in .env');
         // In mock mode, we do nothing.
         return Promise.resolve();
     }
@@ -82,8 +83,25 @@ export async function appendRow(data: Omit<Submission, 'id'>): Promise<void> {
 export async function getRows(): Promise<Submission[]> {
     if (useMock) {
         console.log('MOCK MODE: Fetching rows from sheet.');
-        // In mock mode, we return an empty array.
-        return Promise.resolve([]);
+        // In mock mode, we return some sample data for previewing the admin panel.
+        return Promise.resolve([
+            {
+                id: '1',
+                timestamp: new Date().toISOString(),
+                name: 'John Doe (Sample)',
+                email: 'john.doe@example.com',
+                uniqueId: 'MOCK-123',
+                signature: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='
+            },
+            {
+                id: '2',
+                timestamp: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
+                name: 'Jane Smith (Sample)',
+                email: 'jane.smith@example.com',
+                uniqueId: 'MOCK-456',
+                signature: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='
+            }
+        ]);
     }
 
     const sheets = getSheetsClient();
