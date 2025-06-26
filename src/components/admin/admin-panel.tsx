@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { adminLogout, getAdminData, downloadCsv } from '@/app/actions';
 import type { Submission } from '@/lib/types';
 import { Button } from '@/components/ui/button';
@@ -9,9 +9,13 @@ import { Download, LogOut, Loader2, RefreshCw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 
-export default function AdminPanel() {
-  const [submissions, setSubmissions] = useState<Submission[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+interface AdminPanelProps {
+  initialSubmissions: Submission[];
+}
+
+export default function AdminPanel({ initialSubmissions }: AdminPanelProps) {
+  const [submissions, setSubmissions] = useState<Submission[]>(initialSubmissions);
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
   const loadSubmissions = async () => {
@@ -20,15 +24,11 @@ export default function AdminPanel() {
       const data = await getAdminData();
       setSubmissions(data);
     } catch (error) {
-      toast({ variant: 'destructive', title: 'Error', description: 'Failed to fetch submissions.' });
+      toast({ variant: 'destructive', title: 'Error', description: 'Failed to refresh submissions.' });
     } finally {
       setIsLoading(false);
     }
   };
-
-  useEffect(() => {
-    loadSubmissions();
-  }, []);
 
   const handleDownload = async () => {
     try {

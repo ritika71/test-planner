@@ -3,14 +3,26 @@ import AdminPanel from '@/components/admin/admin-panel';
 import LoginForm from '@/components/admin/login-form';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Lock } from 'lucide-react';
+import { getAdminData } from '@/app/actions';
+import type { Submission } from '@/lib/types';
 
-export default function AdminPage() {
+export default async function AdminPage() {
   const isLoggedIn = cookies().get('signease-admin-auth')?.value === 'true';
+
+  let initialSubmissions: Submission[] = [];
+  if (isLoggedIn) {
+    try {
+      initialSubmissions = await getAdminData();
+    } catch (error) {
+      console.error("Failed to fetch admin data:", error);
+      // Optionally handle the error, e.g., show a message
+    }
+  }
 
   return (
     <div className="min-h-screen bg-background p-4 sm:p-6 md:p-8">
       {isLoggedIn ? (
-        <AdminPanel />
+        <AdminPanel initialSubmissions={initialSubmissions} />
       ) : (
         <div className="flex items-center justify-center pt-20">
           <Card className="w-full max-w-md shadow-lg">
