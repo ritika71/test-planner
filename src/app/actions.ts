@@ -46,7 +46,19 @@ export async function submitSignature(values: SignFormValues) {
   }
 }
 
-export async function adminLogin(password: string) {
+export type AdminLoginFormState = {
+  error?: string;
+};
+
+export async function adminLoginAction(
+  prevState: AdminLoginFormState,
+  formData: FormData
+): Promise<AdminLoginFormState> {
+  const password = formData.get('password') as string;
+  if (!password) {
+    return { error: 'Password is required.' };
+  }
+  
   const adminPassword = process.env.ADMIN_PASSWORD || 'admin';
   if (password === adminPassword) {
     cookies().set('signease-admin-auth', 'true', {
@@ -55,10 +67,12 @@ export async function adminLogin(password: string) {
       maxAge: 60 * 60 * 24, // 1 day
       path: '/',
     });
-    return { success: true };
+    redirect('/admin');
   }
-  return { success: false, error: 'Invalid password.' };
+
+  return { error: 'Invalid password.' };
 }
+
 
 export async function adminLogout() {
   cookies().delete('signease-admin-auth');

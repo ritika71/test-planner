@@ -8,9 +8,3 @@ export const signFormSchema = z.object({
 });
 
 export type SignFormValues = z.infer<typeof signFormSchema>;
-
-export const adminLoginSchema = z.object({
-  password: z.string().min(1, { message: 'Password is required.' }),
-});
-
-export type AdminLoginValues = z.infer<typeof adminLoginSchema>;
