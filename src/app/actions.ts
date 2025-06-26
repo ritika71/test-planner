@@ -36,7 +36,7 @@ export async function submitSignature(values: SignFormValues) {
     } else if (gerror.message) {
         errorMessage = gerror.message;
     }
-
+    console.log(gerror)
     // Add specific hints for common Google Sheets API errors
     if (gerror.code === 403) {
         errorMessage = 'Permission Denied. Please ensure the service account has "Editor" permissions for the Google Sheet. For development, you can set MOCK_SHEETS_API=true in the .env file to bypass this error.';
