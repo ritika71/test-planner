@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { adminLogout, getAdminData, downloadCsv } from '@/app/actions';
+import { useTransition } from 'react';
+import { useRouter } from 'next/navigation';
+import { adminLogout, downloadCsv } from '@/app/actions';
 import type { Submission } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -14,24 +15,14 @@ interface AdminPanelProps {
 }
 
 export default function AdminPanel({ initialSubmissions }: AdminPanelProps) {
-  const [submissions, setSubmissions] = useState<Submission[]>(initialSubmissions);
-  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+  const [isRefreshing, startTransition] = useTransition();
   const { toast } = useToast();
 
-  useEffect(() => {
-    setSubmissions(initialSubmissions);
-  }, [initialSubmissions]);
-
-  const loadSubmissions = async () => {
-    setIsLoading(true);
-    try {
-      const data = await getAdminData();
-      setSubmissions(data);
-    } catch (error) {
-      toast({ variant: 'destructive', title: 'Error', description: 'Failed to refresh submissions.' });
-    } finally {
-      setIsLoading(false);
-    }
+  const handleRefresh = () => {
+    startTransition(() => {
+      router.refresh();
+    });
   };
 
   const handleDownload = async () => {
@@ -57,8 +48,8 @@ export default function AdminPanel({ initialSubmissions }: AdminPanelProps) {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold font-headline">Submissions</h1>
         <div className="flex gap-2">
-            <Button variant="outline" size="icon" onClick={loadSubmissions} disabled={isLoading}>
-                {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+            <Button variant="outline" size="icon" onClick={handleRefresh} disabled={isRefreshing}>
+                {isRefreshing ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
             </Button>
           <Button onClick={handleDownload}><Download className="mr-2 h-4 w-4" /> Download CSV</Button>
           <form action={adminLogout}>
@@ -79,14 +70,8 @@ export default function AdminPanel({ initialSubmissions }: AdminPanelProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={5} className="h-24 text-center">
-                  <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary" />
-                </TableCell>
-              </TableRow>
-            ) : submissions.length > 0 ? (
-              submissions.map((sub) => (
+            {initialSubmissions.length > 0 ? (
+              initialSubmissions.map((sub) => (
                 <TableRow key={sub.id}>
                   <TableCell>{new Date(sub.timestamp).toLocaleString()}</TableCell>
                   <TableCell className="font-medium">{sub.name}</TableCell>
