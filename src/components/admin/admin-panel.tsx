@@ -47,7 +47,8 @@ export default function AdminPanel({ initialSubmissions, fetchError }: AdminPane
       document.body.removeChild(link);
       toast({ title: 'Success', description: 'CSV download started.' });
     } catch (error) {
-      toast({ variant: 'destructive', title: 'Error', 'description': 'Failed to download CSV.' });
+      const message = error instanceof Error ? error.message : "An unknown error occurred while downloading the CSV.";
+      toast({ variant: 'destructive', title: 'Error', 'description': message });
     }
   };
 

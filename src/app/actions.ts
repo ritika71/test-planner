@@ -119,7 +119,7 @@ export async function downloadCsv() {
             formatCsvField(row.email),
             formatCsvField(row.uniqueId),
             formatCsvField(row.timestamp),
-            row.signature.startsWith('data:') ? 'Embedded' : formatCsvField(row.signature)
+            (row.signature && row.signature.startsWith('data:')) ? 'Embedded' : formatCsvField(row.signature)
         ].join(','))
     ];
     return csvRows.join('\n');
