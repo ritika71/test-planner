@@ -29,19 +29,20 @@ export async function submitSignature(values: SignFormValues) {
     console.error('Submission Error:', error);
 
     const gerror = error as any;
-    let errorMessage = 'An unexpected server error occurred. Please check the server logs.';
+    let errorMessage = 'An unexpected server error occurred. Please check the server logs for more details.';
     
+    // Attempt to get a more specific message from the Google API error response
     if (gerror.errors && gerror.errors.length > 0 && gerror.errors[0].message) {
         errorMessage = gerror.errors[0].message;
     } else if (gerror.message) {
         errorMessage = gerror.message;
     }
-    console.log(gerror)
-    // Add specific hints for common Google Sheets API errors
+
+    // Append helpful hints based on common error codes
     if (gerror.code === 403) {
-        errorMessage = 'Permission Denied. Please ensure the service account has "Editor" permissions for the Google Sheet. For development, you can set MOCK_SHEETS_API=true in the .env file to bypass this error.';
+        errorMessage += ' (Hint: This is a "Permission Denied" error. Please double-check that your service account has "Editor" permissions on the Google Sheet and that the Sheets API is enabled in your Google Cloud project.)';
     } else if (gerror.code === 404) {
-        errorMessage = 'Sheet Not Found. Please double-check your GOOGLE_SHEET_ID.';
+        errorMessage += ' (Hint: This is a "Not Found" error. Please double-check your GOOGLE_SHEET_ID and GOOGLE_SHEET_NAME in the .env file.)';
     }
     
     return { success: false, error: errorMessage };
