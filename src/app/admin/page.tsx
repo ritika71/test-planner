@@ -12,19 +12,21 @@ export default async function AdminPage() {
   const isLoggedIn = cookies().get('signease-admin-auth')?.value === 'true';
 
   let initialSubmissions: Submission[] = [];
+  let fetchError: string | null = null;
+
   if (isLoggedIn) {
     try {
       initialSubmissions = await getAdminData();
     } catch (error) {
       console.error("Failed to fetch admin data:", error);
-      // Optionally handle the error, e.g., show a message
+      fetchError = error instanceof Error ? error.message : "An unknown error occurred while fetching submissions.";
     }
   }
 
   return (
     <div className="min-h-screen bg-background p-4 sm:p-6 md:p-8">
       {isLoggedIn ? (
-        <AdminPanel initialSubmissions={initialSubmissions} />
+        <AdminPanel initialSubmissions={initialSubmissions} fetchError={fetchError} />
       ) : (
         <div className="flex items-center justify-center pt-20">
           <Card className="w-full max-w-md shadow-lg">

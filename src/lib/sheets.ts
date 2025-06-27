@@ -140,9 +140,12 @@ export async function getRows(): Promise<Submission[]> {
         console.error(`DEBUG: Attempted to read from Sheet ID: ${SPREADSHEET_ID}`);
         console.error(`DEBUG: Attempted to read from Sheet Name: ${SHEET_NAME}`);
         console.error(`DEBUG: Using Service Account Email starting with: ${process.env.GOOGLE_SHEETS_CLIENT_EMAIL?.substring(0, 15)}...`);
-        if (gerror.code === 404 || gerror.code === 403) {
-            console.error("Sheet not found or permission denied. Please check your GOOGLE_SHEET_ID and sharing settings.");
+        if (gerror.code === 404) {
+            throw new Error(`Sheet not found. Please check your GOOGLE_SHEET_ID and GOOGLE_SHEET_NAME in the .env file. (Original error: ${gerror.message})`);
         }
-        return [];
+        if (gerror.code === 403) {
+            throw new Error(`Permission Denied. Please ensure your service account has "Editor" permissions on the Google Sheet. (Original error: ${gerror.message})`);
+        }
+        throw error;
     }
 }

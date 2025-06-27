@@ -6,15 +6,18 @@ import { adminLogout, downloadCsv } from '@/app/actions';
 import type { Submission } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Download, LogOut, Loader2, RefreshCw } from 'lucide-react';
+import { Download, LogOut, Loader2, RefreshCw, AlertCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+
 
 interface AdminPanelProps {
   initialSubmissions: Submission[];
+  fetchError?: string | null;
 }
 
-export default function AdminPanel({ initialSubmissions }: AdminPanelProps) {
+export default function AdminPanel({ initialSubmissions, fetchError }: AdminPanelProps) {
   const router = useRouter();
   const [isRefreshing, startTransition] = useTransition();
   const { toast } = useToast();
@@ -63,6 +66,14 @@ export default function AdminPanel({ initialSubmissions }: AdminPanelProps) {
         </div>
       </div>
       
+      {fetchError && (
+        <Alert variant="destructive" className="mb-6">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Error Fetching Submissions</AlertTitle>
+            <AlertDescription>{fetchError}</AlertDescription>
+        </Alert>
+      )}
+
       <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
         <Table>
           <TableHeader>
@@ -95,9 +106,11 @@ export default function AdminPanel({ initialSubmissions }: AdminPanelProps) {
                 </TableRow>
               ))
             ) : (
-              <TableRow>
-                <TableCell colSpan={5} className="h-24 text-center">No submissions yet.</TableCell>
-              </TableRow>
+                !fetchError && (
+                    <TableRow>
+                        <TableCell colSpan={5} className="h-24 text-center">No submissions yet.</TableCell>
+                    </TableRow>
+                )
             )}
           </TableBody>
         </Table>
