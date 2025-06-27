@@ -118,21 +118,36 @@ export async function getRows(): Promise<Submission[]> {
             range: RANGE,
         });
 
+        console.log('DEBUG: Full response from Google Sheets API:', JSON.stringify(response.data, null, 2));
+
         const rows = response.data.values;
-        if (!rows || rows.length <= 1) { // <=1 to account for header
+        if (!rows || rows.length === 0) {
+            console.log('DEBUG: No rows returned from sheet. The sheet might be empty or the range is incorrect.');
             return [];
         }
 
+        console.log(`DEBUG: Found ${rows.length} total rows in the sheet.`);
+        
+        if (rows.length <= 1) { 
+            console.log('DEBUG: Only a header row was found (or the sheet is empty). Returning empty array.');
+            return [];
+        }
+
+
         // We skip the first row (header) with .slice(1)
         // Then map the sheet rows to Submission objects.
-        return rows.slice(1).map((row, index) => ({
+        const submissions = rows.slice(1).map((row, index) => ({
             id: (index + 2).toString(), // +2 because sheets are 1-indexed and we sliced the header
             timestamp: row[0] || '',
             name: row[1] || '',
             email: row[2] || '',
             uniqueId: row[3] || '',
             signature: row[4] || '',
-        })).sort((a,b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+        }));
+        
+        console.log(`DEBUG: Mapped ${submissions.length} submissions.`);
+
+        return submissions.sort((a,b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
     } catch (error) {
         const gerror = error as any;
