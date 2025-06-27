@@ -22,6 +22,7 @@ const useMock = process.env.MOCK_SHEETS_API === 'true';
 
 // This function checks if all required environment variables are set.
 const checkCredentials = () => {
+    if (useMock) return;
     if (
         !process.env.GOOGLE_SHEETS_CLIENT_EMAIL ||
         !process.env.GOOGLE_SHEETS_PRIVATE_KEY ||
@@ -118,8 +119,6 @@ export async function getRows(): Promise<Submission[]> {
             range: RANGE,
         });
 
-        console.log('DEBUG: Full response from Google Sheets API:', JSON.stringify(response.data, null, 2));
-
         const rows = response.data.values;
         if (!rows || rows.length === 0) {
             console.log('DEBUG: No rows returned from sheet. The sheet might be empty or the range is incorrect.');
@@ -128,26 +127,22 @@ export async function getRows(): Promise<Submission[]> {
 
         console.log(`DEBUG: Found ${rows.length} total rows in the sheet.`);
         
-        if (rows.length <= 1) { 
-            console.log('DEBUG: Only a header row was found (or the sheet is empty). Returning empty array.');
-            return [];
-        }
-
-
-        // We skip the first row (header) with .slice(1)
-        // Then map the sheet rows to Submission objects.
-        const submissions = rows.slice(1).map((row, index) => ({
-            id: (index + 2).toString(), // +2 because sheets are 1-indexed and we sliced the header
+        // Map all rows, assuming no header. If a header exists, it will be filtered out next.
+        const submissions = rows.map((row, index) => ({
+            id: (index + 1).toString(), // Use index + 1 for a unique ID
             timestamp: row[0] || '',
             name: row[1] || '',
             email: row[2] || '',
             uniqueId: row[3] || '',
             signature: row[4] || '',
         }));
-        
-        console.log(`DEBUG: Mapped ${submissions.length} submissions.`);
 
-        return submissions.sort((a,b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+        // Filter out any row that looks like a header (e.g., where the timestamp is not a valid date)
+        const filteredSubmissions = submissions.filter(sub => !isNaN(new Date(sub.timestamp).getTime()));
+
+        console.log(`DEBUG: Mapped and filtered ${filteredSubmissions.length} submissions.`);
+
+        return filteredSubmissions.sort((a,b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
     } catch (error) {
         const gerror = error as any;
