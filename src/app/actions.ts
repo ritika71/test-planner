@@ -90,6 +90,20 @@ export async function getAdminData(): Promise<Submission[]> {
   return getRows();
 }
 
+const formatCsvField = (field: string | null | undefined): string => {
+    if (field === null || typeof field === 'undefined') {
+        return '';
+    }
+    const str = String(field);
+    // If the field contains a comma, a double quote, or a newline, enclose it in double quotes.
+    if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+        // Escape any double quotes within the field by doubling them up.
+        const escapedStr = str.replace(/"/g, '""');
+        return `"${escapedStr}"`;
+    }
+    return str;
+};
+
 export async function downloadCsv() {
     const isLoggedIn = cookies().get('signease-admin-auth')?.value === 'true';
     if (!isLoggedIn) {
@@ -100,12 +114,12 @@ export async function downloadCsv() {
     const csvRows = [
         headers.join(','),
         ...data.map(row => [
-            row.id,
-            `"${row.name}"`,
-            row.email,
-            row.uniqueId,
-            row.timestamp,
-            row.signature.startsWith('data:') ? 'Embedded' : row.signature
+            formatCsvField(row.id),
+            formatCsvField(row.name),
+            formatCsvField(row.email),
+            formatCsvField(row.uniqueId),
+            formatCsvField(row.timestamp),
+            row.signature.startsWith('data:') ? 'Embedded' : formatCsvField(row.signature)
         ].join(','))
     ];
     return csvRows.join('\n');
