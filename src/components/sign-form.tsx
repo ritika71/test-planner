@@ -123,7 +123,7 @@ export function SignForm() {
               Submitting...
             </>
           ) : (
-            'Confirm My Spot'
+            'Submit'
           )}
         </Button>
       </form>
