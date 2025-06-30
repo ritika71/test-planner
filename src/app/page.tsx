@@ -11,15 +11,15 @@ export default function Home() {
           <div className="mx-auto flex items-center justify-center bg-primary/10 text-primary p-3 rounded-full w-fit">
             <PartyPopper className="h-8 w-8" />
           </div>
-          <CardTitle className="mt-4 text-3xl font-headline">Adventure Awaits: Company Trip Sign-Up!</CardTitle>
+          <CardTitle className="mt-4 text-3xl font-headline">Let's Get a 'Yes!' for a Company Trip!</CardTitle>
           <CardDescription className="text-lg text-muted-foreground">
-            Get ready for an unforgettable adventure! We're planning an amazing company getaway from Surat to relax, recharge, and make some great memories together. If you're in for some fun, fill out the form below to secure your spot. Let's make this trip legendary!
+            Let's show the management team how much we want a company getaway! We're collecting signatures to propose an amazing team trip out of Surat. The more of us who sign, the stronger our request will be. Add your name below to show your support and help us get the green light!
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="text-center text-muted-foreground mb-6 space-y-2 text-base">
-            <p>Just imagine: Great food 🍔, fun games 🎯, and amazing company 🤝!</p>
-            <p>This is your chance to bond with your colleagues and create memories that will last a lifetime. Don't miss out! 🚀</p>
+            <p>Imagine trading office chairs for open air ☀️ and team meetings for team adventures 🗺️.</p>
+            <p>Your signature can help convince the management team! Let's do this! 💪</p>
           </div>
           <Separator className="mb-8" />
           <SignForm />
