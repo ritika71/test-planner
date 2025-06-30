@@ -33,7 +33,7 @@ export function SignaturePad({ onChange }: SignaturePadProps) {
     <div className="relative rounded-lg border bg-card">
       <SignatureCanvas
         ref={padRef}
-        penColor="hsl(var(--primary))"
+        penColor="black"
         canvasProps={{
           className: 'w-full h-[200px] rounded-lg',
         }}
