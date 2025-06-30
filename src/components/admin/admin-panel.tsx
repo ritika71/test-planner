@@ -33,6 +33,10 @@ export default function AdminPanel({ initialSubmissions, fetchError }: AdminPane
     });
   };
 
+  const handleLogout = async () => {
+    await adminLogout();
+  };
+
   const handleDownload = async () => {
     try {
       const csvData = await downloadCsv();
@@ -61,9 +65,9 @@ export default function AdminPanel({ initialSubmissions, fetchError }: AdminPane
                 {isRefreshing ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
             </Button>
           <Button type="button" onClick={handleDownload}><Download className="mr-2 h-4 w-4" /> Download CSV</Button>
-          <form action={adminLogout}>
-            <Button variant="destructive"><LogOut className="mr-2 h-4 w-4" /> Logout</Button>
-          </form>
+          <Button type="button" variant="destructive" onClick={handleLogout}>
+            <LogOut className="mr-2 h-4 w-4" /> Logout
+          </Button>
         </div>
       </div>
       
