@@ -1,6 +1,6 @@
 import { SignForm } from '@/components/sign-form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plane } from 'lucide-react';
+import { PartyPopper } from 'lucide-react';
 
 export default function Home() {
   return (
@@ -8,11 +8,11 @@ export default function Home() {
       <Card className="w-full max-w-2xl shadow-2xl">
         <CardHeader className="text-center">
           <div className="mx-auto flex items-center justify-center bg-primary/10 text-primary p-3 rounded-full w-fit">
-            <Plane className="h-8 w-8" />
+            <PartyPopper className="h-8 w-8" />
           </div>
-          <CardTitle className="mt-4 text-3xl font-headline">Trip Sign-up: Surat Getaway</CardTitle>
+          <CardTitle className="mt-4 text-3xl font-headline">Adventure Awaits: Company Trip Sign-Up!</CardTitle>
           <CardDescription className="text-lg text-muted-foreground">
-            Planning a trip out of Surat! Colleagues who agree to join, please fill this form to confirm your spot.
+            Get ready for an unforgettable adventure! We're planning an amazing company getaway from Surat to relax, recharge, and make some great memories together. If you're in for some fun, fill out the form below to secure your spot. Let's make this trip legendary!
           </CardDescription>
         </CardHeader>
         <CardContent>
