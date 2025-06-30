@@ -97,7 +97,7 @@ export function SignForm() {
             <FormItem>
               <FormLabel>Unique ID</FormLabel>
               <FormControl>
-                <Input placeholder="Enter your Unique ID (must match email)" {...field} />
+                <Input placeholder="Enter your assigned Unique ID" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
