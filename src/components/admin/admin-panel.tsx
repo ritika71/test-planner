@@ -61,11 +61,9 @@ export default function AdminPanel({ initialSubmissions, fetchError }: AdminPane
                 {isRefreshing ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
             </Button>
           <Button type="button" onClick={handleDownload}><Download className="mr-2 h-4 w-4" /> Download CSV</Button>
-          <form action={adminLogout}>
-            <Button type="submit" variant="destructive">
-              <LogOut className="mr-2 h-4 w-4" /> Logout
-            </Button>
-          </form>
+          <Button type="button" variant="destructive" onClick={() => adminLogout()}>
+            <LogOut className="mr-2 h-4 w-4" /> Logout
+          </Button>
         </div>
       </div>
       
