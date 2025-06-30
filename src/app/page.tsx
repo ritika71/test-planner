@@ -13,7 +13,7 @@ export default function Home() {
           </div>
           <CardTitle className="mt-4 text-3xl font-headline">Let's Get a 'Yes!' for a Company Trip!</CardTitle>
           <CardDescription className="text-lg text-muted-foreground">
-            Let's show the management team how much we want a company getaway! We're collecting signatures to propose an amazing team trip out of Surat. The more of us who sign, the stronger our request will be. Add your name below to show your support and help us get the green light!
+            Let's show the management team the excitement level of our team! We're gathering signatures to propose an awesome company trip out of Surat. The more signatures we get, the better our chances of convincing them. Sign below to cast your vote and help make this trip a reality!
           </CardDescription>
         </CardHeader>
         <CardContent>
