@@ -1,6 +1,7 @@
 import { SignForm } from '@/components/sign-form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { PartyPopper } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
 
 export default function Home() {
   return (
@@ -16,6 +17,11 @@ export default function Home() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          <div className="text-center text-muted-foreground mb-6 space-y-2 text-base">
+            <p>Just imagine: Great food 🍔, fun games 🎯, and amazing company 🤝!</p>
+            <p>This is your chance to bond with your colleagues and create memories that will last a lifetime. Don't miss out! 🚀</p>
+          </div>
+          <Separator className="mb-8" />
           <SignForm />
         </CardContent>
       </Card>
