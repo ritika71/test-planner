@@ -40,7 +40,7 @@ export default function AdminPanel({ initialSubmissions, fetchError }: AdminPane
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.setAttribute('href', url);
-      link.setAttribute('download', `signease-submissions-${new Date().toISOString()}.csv`);
+      link.setAttribute('download', `trip-submissions-${new Date().toISOString()}.csv`);
       link.style.visibility = 'hidden';
       document.body.appendChild(link);
       link.click();
@@ -55,7 +55,7 @@ export default function AdminPanel({ initialSubmissions, fetchError }: AdminPane
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold font-headline">Submissions</h1>
+        <h1 className="text-3xl font-bold font-headline">Trip Submissions</h1>
         <div className="flex gap-2">
             <Button variant="outline" size="icon" onClick={handleRefresh} disabled={isRefreshing}>
                 {isRefreshing ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
@@ -82,7 +82,7 @@ export default function AdminPanel({ initialSubmissions, fetchError }: AdminPane
               <TableHead className="w-[150px]">Timestamp</TableHead>
               <TableHead>Name</TableHead>
               <TableHead>Email</TableHead>
-              <TableHead>Unique ID</TableHead>
+              <TableHead>Employee ID</TableHead>
               <TableHead className="text-right">Signature</TableHead>
             </TableRow>
           </TableHeader>

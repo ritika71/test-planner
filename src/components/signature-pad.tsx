@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import SignatureCanvas from 'react-signature-canvas';
 import { Button } from './ui/button';
 import { Trash2 } from 'lucide-react';
@@ -10,8 +10,17 @@ interface SignaturePadProps {
   value?: string;
 }
 
-export function SignaturePad({ onChange }: SignaturePadProps) {
+export function SignaturePad({ onChange, value }: SignaturePadProps) {
   const padRef = useRef<SignatureCanvas>(null);
+
+  useEffect(() => {
+    // When the form is reset, the `value` will become an empty string.
+    // This effect detects that change and clears the canvas visually.
+    if (value === '' && padRef.current && !padRef.current.isEmpty()) {
+      padRef.current.clear();
+    }
+  }, [value]);
+
 
   const clear = () => {
     padRef.current?.clear();

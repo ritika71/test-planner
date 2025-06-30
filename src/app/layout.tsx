@@ -3,8 +3,8 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: 'SignEase',
-  description: 'Easily capture names and signatures.',
+  title: 'Company Trip Sign-up',
+  description: 'Sign up for the company trip out of Surat.',
 };
 
 export default function RootLayout({

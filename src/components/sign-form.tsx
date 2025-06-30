@@ -39,8 +39,8 @@ export function SignForm() {
 
       if (result.success) {
         toast({
-          title: 'Success!',
-          description: 'Your information has been submitted successfully.',
+          title: 'Confirmation Received!',
+          description: 'Your spot on the trip is confirmed. We look forward to seeing you!',
         });
         form.reset();
       } else {
@@ -84,7 +84,7 @@ export function SignForm() {
             <FormItem>
               <FormLabel>Email Address</FormLabel>
               <FormControl>
-                <Input type="email" placeholder="your@email.com" {...field} />
+                <Input type="email" placeholder="your.name@company.com" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -95,9 +95,9 @@ export function SignForm() {
           name="uniqueId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Unique ID</FormLabel>
+              <FormLabel>Employee ID</FormLabel>
               <FormControl>
-                <Input placeholder="Enter your unique ID" {...field} />
+                <Input placeholder="Enter your Employee ID" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -123,7 +123,7 @@ export function SignForm() {
               Submitting...
             </>
           ) : (
-            'Submit'
+            'Confirm My Spot'
           )}
         </Button>
       </form>
