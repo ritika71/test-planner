@@ -11,12 +11,7 @@ import type { Submission } from '@/lib/types';
 // In a real application, you would want to manage this list in a database
 // or a separate, more secure configuration (like another Google Sheet tab).
 const validEmployees = [
-    { email: 'yash@weetechsolution.com', uniqueId: 'aB1!cDEf2@gh' },
     { email: 'harshtambakhe@weetechsolution.com', uniqueId: 'iJ2@kLMn3#op' },
-    { email: 'sagar@weetechsolution.com', uniqueId: 'qR3#sTUp4$vw' },
-    { email: 'yagnik@weetechsolution.com', uniqueId: 'xY4$zABc5%de' },
-    { email: 'deepakkhunt@weetechsolution.com', uniqueId: 'fG5%hIJk6^lm' },
-    { email: 'akash@weetechsolution.com', uniqueId: 'nO6^pQRSt7&uv' },
     { email: 'chandrapal@weetechsolution.com', uniqueId: 'wX7&yZAb8*cd' },
     { email: 'chandan@weetechsolution.com', uniqueId: 'eF8*gHIj9(kl' },
     { email: 'ritika@weetechsolution.com', uniqueId: 'mN9(oPQr1)st' },

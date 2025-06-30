@@ -57,10 +57,10 @@ export default function AdminPanel({ initialSubmissions, fetchError }: AdminPane
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold font-headline">Trip Submissions</h1>
         <div className="flex gap-2">
-            <Button variant="outline" size="icon" onClick={handleRefresh} disabled={isRefreshing}>
+            <Button type="button" variant="outline" size="icon" onClick={handleRefresh} disabled={isRefreshing}>
                 {isRefreshing ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
             </Button>
-          <Button onClick={handleDownload}><Download className="mr-2 h-4 w-4" /> Download CSV</Button>
+          <Button type="button" onClick={handleDownload}><Download className="mr-2 h-4 w-4" /> Download CSV</Button>
           <form action={adminLogout}>
             <Button variant="destructive"><LogOut className="mr-2 h-4 w-4" /> Logout</Button>
           </form>
