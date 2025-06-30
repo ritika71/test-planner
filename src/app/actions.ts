@@ -7,9 +7,34 @@ import { signFormSchema, type SignFormValues } from '@/lib/schemas';
 import { getRows, appendRow } from '@/lib/sheets';
 import type { Submission } from '@/lib/types';
 
+// For demonstration purposes, this is a hardcoded list of valid employees.
+// In a real application, you would want to manage this list in a database
+// or a separate, more secure configuration (like another Google Sheet tab).
+const validEmployees = [
+  { email: 'dharmik@example.com', uniqueId: 'dharmik@example.com' },
+  { email: 'jane.doe@company.com', uniqueId: 'jane.doe@company.com' },
+  { email: 'peter.jones@company.com', uniqueId: 'peter.jones@company.com' },
+  { email: 'susan.smith@company.com', uniqueId: 'susan.smith@company.com' },
+];
+
 export async function submitSignature(values: SignFormValues) {
   try {
     const validatedFields = signFormSchema.parse(values);
+    
+    // New validation: Check if the provided email and uniqueId are in our list of valid employees.
+    const isApproved = validEmployees.some(
+      employee => 
+        employee.email.toLowerCase() === validatedFields.email.toLowerCase() && 
+        employee.uniqueId.toLowerCase() === validatedFields.uniqueId.toLowerCase()
+    );
+
+    if (!isApproved) {
+      return { 
+        success: false, 
+        error: "This email and Unique ID pair is not on the approved list for the trip." 
+      };
+    }
+
 
     const submissionData = {
       name: validatedFields.name,
@@ -106,6 +131,7 @@ const formatCsvField = (field: string | null | undefined): string => {
 };
 
 export async function downloadCsv() {
+  try {
     const isLoggedIn = cookies().get('signease-admin-auth')?.value === 'true';
     if (!isLoggedIn) {
         throw new Error('Unauthorized');
@@ -124,4 +150,10 @@ export async function downloadCsv() {
         ].join(','))
     ];
     return csvRows.join('\n');
+  } catch(error) {
+    const message = error instanceof Error ? error.message : "An unknown server error occurred.";
+    console.error("CSV Download Error:", message);
+    // We can't return a Response here, so we throw to be caught by the client-side.
+    throw new Error(`Failed to generate CSV: ${message}`);
+  }
 }
