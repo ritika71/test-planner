@@ -82,7 +82,7 @@ export default function AdminPanel({ initialSubmissions, fetchError }: AdminPane
               <TableHead className="w-[150px]">Timestamp</TableHead>
               <TableHead>Name</TableHead>
               <TableHead>Email</TableHead>
-              <TableHead>Employee ID</TableHead>
+              <TableHead>Unique ID</TableHead>
               <TableHead className="text-right">Signature</TableHead>
             </TableRow>
           </TableHeader>

@@ -24,7 +24,8 @@ export async function submitSignature(values: SignFormValues) {
     return { success: true };
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return { success: false, error: 'Invalid data provided.' };
+      // Return the first validation error message. This will now include our custom rule.
+      return { success: false, error: error.errors[0]?.message || 'Invalid data provided.' };
     }
     console.error('Submission Error:', error);
 

@@ -95,9 +95,9 @@ export function SignForm() {
           name="uniqueId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Employee ID</FormLabel>
+              <FormLabel>Unique ID</FormLabel>
               <FormControl>
-                <Input placeholder="Enter your Employee ID" {...field} />
+                <Input placeholder="Enter your Unique ID (must match email)" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
