@@ -19,7 +19,8 @@ interface AdminPanelProps {
 
 export default function AdminPanel({ initialSubmissions, fetchError }: AdminPanelProps) {
   const router = useRouter();
-  const [isRefreshing, startTransition] = useTransition();
+  const [isRefreshing, startRefreshTransition] = useTransition();
+  const [isLoggingOut, startLogoutTransition] = useTransition();
   const { toast } = useToast();
   const [isClient, setIsClient] = useState(false);
 
@@ -28,8 +29,14 @@ export default function AdminPanel({ initialSubmissions, fetchError }: AdminPane
   }, []);
 
   const handleRefresh = () => {
-    startTransition(() => {
+    startRefreshTransition(() => {
       router.refresh();
+    });
+  };
+  
+  const handleLogout = () => {
+    startLogoutTransition(async () => {
+        await adminLogout();
     });
   };
 
@@ -52,20 +59,20 @@ export default function AdminPanel({ initialSubmissions, fetchError }: AdminPane
     }
   };
 
+  const isActionPending = isRefreshing || isLoggingOut;
+
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold font-headline">Trip Submissions</h1>
         <div className="flex items-center gap-2">
-            <Button type="button" variant="outline" size="icon" onClick={handleRefresh} disabled={isRefreshing}>
+            <Button type="button" variant="outline" size="icon" onClick={handleRefresh} disabled={isActionPending}>
                 {isRefreshing ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
             </Button>
-          <Button type="button" onClick={handleDownload}><Download className="mr-2 h-4 w-4" /> Download CSV</Button>
-          <form action={adminLogout}>
-            <Button type="submit" variant="destructive">
-              <LogOut className="mr-2 h-4 w-4" /> Logout
-            </Button>
-          </form>
+          <Button type="button" onClick={handleDownload} disabled={isActionPending}><Download className="mr-2 h-4 w-4" /> Download CSV</Button>
+          <Button type="button" variant="destructive" onClick={handleLogout} disabled={isActionPending}>
+              {isLoggingOut ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogOut className="mr-2 h-4 w-4" />} Logout
+          </Button>
         </div>
       </div>
       
