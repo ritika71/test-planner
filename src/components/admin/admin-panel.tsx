@@ -1,14 +1,15 @@
 'use client';
 
 import { useTransition, useState, useEffect } from 'react';
-import { adminLogout, downloadCsv } from '@/app/actions';
+import { adminLogout } from '@/app/actions';
 import type { Submission } from '@/lib/types';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Download, LogOut, Loader2, AlertCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { cn } from '@/lib/utils';
 
 
 interface AdminPanelProps {
@@ -28,26 +29,8 @@ export default function AdminPanel({ initialSubmissions, fetchError }: AdminPane
   const handleLogout = () => {
     startLogoutTransition(async () => {
         await adminLogout();
+        toast({ title: 'Logged out successfully.'});
     });
-  };
-
-  const handleDownload = async () => {
-    try {
-      const csvData = await downloadCsv();
-      const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.setAttribute('href', url);
-      link.setAttribute('download', `trip-submissions-${new Date().toISOString()}.csv`);
-      link.style.visibility = 'hidden';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      toast({ title: 'Success', description: 'CSV download started.' });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "An unknown error occurred while downloading the CSV.";
-      toast({ variant: 'destructive', title: 'Error', 'description': message });
-    }
   };
 
   const isActionPending = isLoggingOut;
@@ -57,9 +40,14 @@ export default function AdminPanel({ initialSubmissions, fetchError }: AdminPane
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold font-headline">Trip Submissions</h1>
         <div className="flex items-center gap-2">
-          <Button type="button" onClick={handleDownload} disabled={isActionPending}><Download className="mr-2 h-4 w-4" /> Download CSV</Button>
+          <a
+            href="/api/csv"
+            className={cn(buttonVariants({ variant: 'default' }))}
+          >
+            <Download className="mr-2 h-4 w-4" /> Download CSV
+          </a>
           <Button type="button" variant="destructive" onClick={handleLogout} disabled={isActionPending}>
-              {isLoggingOut ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogOut className="mr-2 h-4 w-4" />} Logout
+              {isActionPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogOut className="mr-2 h-4 w-4" />} Logout
           </Button>
         </div>
       </div>
