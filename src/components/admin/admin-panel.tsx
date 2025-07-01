@@ -1,12 +1,11 @@
 'use client';
 
 import { useTransition, useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { adminLogout, downloadCsv } from '@/app/actions';
 import type { Submission } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Download, LogOut, Loader2, RefreshCw, AlertCircle } from 'lucide-react';
+import { Download, LogOut, Loader2, AlertCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
@@ -18,8 +17,6 @@ interface AdminPanelProps {
 }
 
 export default function AdminPanel({ initialSubmissions, fetchError }: AdminPanelProps) {
-  const router = useRouter();
-  const [isRefreshing, startRefreshTransition] = useTransition();
   const [isLoggingOut, startLogoutTransition] = useTransition();
   const { toast } = useToast();
   const [isClient, setIsClient] = useState(false);
@@ -27,12 +24,6 @@ export default function AdminPanel({ initialSubmissions, fetchError }: AdminPane
   useEffect(() => {
     setIsClient(true);
   }, []);
-
-  const handleRefresh = () => {
-    startRefreshTransition(() => {
-      router.refresh();
-    });
-  };
   
   const handleLogout = () => {
     startLogoutTransition(async () => {
@@ -59,16 +50,13 @@ export default function AdminPanel({ initialSubmissions, fetchError }: AdminPane
     }
   };
 
-  const isActionPending = isRefreshing || isLoggingOut;
+  const isActionPending = isLoggingOut;
 
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold font-headline">Trip Submissions</h1>
         <div className="flex items-center gap-2">
-            <Button type="button" variant="outline" size="icon" onClick={handleRefresh} disabled={isActionPending}>
-                {isRefreshing ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
-            </Button>
           <Button type="button" onClick={handleDownload} disabled={isActionPending}><Download className="mr-2 h-4 w-4" /> Download CSV</Button>
           <Button type="button" variant="destructive" onClick={handleLogout} disabled={isActionPending}>
               {isLoggingOut ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <LogOut className="mr-2 h-4 w-4" />} Logout
