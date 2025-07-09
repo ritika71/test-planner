@@ -18,7 +18,8 @@ export default function Home() {
         </CardHeader>
         <CardContent>
           <div className="text-center text-muted-foreground mb-6 space-y-2 text-base">
-            <p>Imagine trading office chairs for open air ☀️ and team meetings for team adventures 🗺️.</p>
+            <p>The vibes are high, the squad is ready, are you in? 🤔 </p>
+            <p>Let’s make this the most epic team trip ever! 💥🌄</p>
             <p>Your signature can help convince the management team! Let's do this! 💪</p>
           </div>
           <Separator className="mb-8" />

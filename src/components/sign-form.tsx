@@ -40,7 +40,7 @@ export function SignForm() {
       if (result.success) {
         toast({
           title: 'Confirmation Received!',
-          description: 'Your spot on the trip is confirmed. We look forward to seeing you!',
+          description: 'Hurray! One more response, we’re one step closer to the trip of a lifetime! 🎉🚌',
         });
         form.reset();
       } else {
