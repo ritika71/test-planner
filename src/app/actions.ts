@@ -66,7 +66,7 @@ export async function submitSignature(values: SignFormValues) {
   try {
     const validatedFields = signFormSchema.parse(values);
     
-    // New validation: Check if the provided email and uniqueId are in our list of valid employees.
+    // Validation 1: Check if the provided email and uniqueId are in our list of valid employees.
     const isApproved = validEmployees.some(
       employee => 
         employee.email.toLowerCase() === validatedFields.email.toLowerCase() && 
@@ -78,6 +78,19 @@ export async function submitSignature(values: SignFormValues) {
         success: false, 
         error: "This email and Unique ID pair is not on the approved list for the trip." 
       };
+    }
+    
+    // Validation 2: Check if the user has already submitted.
+    const existingSubmissions = await getRows();
+    const userAlreadyExists = existingSubmissions.some(
+      (submission) => submission.email.toLowerCase() === validatedFields.email.toLowerCase()
+    );
+
+    if (userAlreadyExists) {
+        return {
+            success: false,
+            error: 'User already exists.',
+        };
     }
 
 
